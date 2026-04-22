@@ -41,6 +41,13 @@ npx expo run:ios
 
 ### Android
 
+Asegurarse de crear el archivo `android/local.properties` con la ruta del SDK antes de compilar:
+
+```bash
+echo "sdk.dir=$HOME/Library/Android/sdk" > android/local.properties
+```
+> Si el SDK está en otra ubicación, se puede verificar en Android Studio → Settings → Android SDK → Android SDK Location.
+
 ```bash
 npx expo run:android
 ```

@@ -25,10 +25,11 @@ const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
   const videoRef = useRef(null);
   const [buffering, setBuffering] = useState(true);
 
-  // Resetea el spinner de carga cada vez que cambia el video
+  // Cada vez que el modal se abre el Video se monta desde cero,
+  // por lo que el buffering siempre arranca en true
   useEffect(() => {
-    setBuffering(true);
-  }, [videoUrl]);
+    if (visible) setBuffering(true);
+  }, [visible]);
 
   return (
     <Modal
@@ -47,7 +48,7 @@ const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
         </TouchableOpacity>
 
         <View style={styles.videoContainer}>
-          {videoUrl ? (
+          {videoUrl && visible ? (
             <>
               <Video
                 ref={videoRef}
@@ -65,11 +66,11 @@ const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
                 <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color="#fff" />
               )}
             </>
-          ) : (
+          ) : !videoUrl ? (
             <View style={styles.unavailableContainer}>
               <Text style={styles.unavailableText}>Video no disponible</Text>
             </View>
-          )}
+          ) : null}
         </View>
 
         <View style={styles.info}>
