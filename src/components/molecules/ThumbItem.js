@@ -1,27 +1,28 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, PixelRatio } from 'react-native';
 import LazyImage from '../atoms/LazyImage';
 import ItemTitle from '../atoms/ItemTitle';
 
-const THUMB_WIDTH = 200;
-const THUMB_HEIGHT = 120;
+// Dimensiones definidas en el brief: placeimg.com/640/480
+const THUMB_WIDTH = Math.round(640 / PixelRatio.get());
+const THUMB_HEIGHT = Math.round(480 / PixelRatio.get());
 
 const ThumbItem = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item)} style={styles.container} activeOpacity={0.8}>
-    <LazyImage uri={item.imageUrl} style={styles.image} />
+    <View style={styles.imageWrapper}>
+      <LazyImage uri={item.imageUrl} width={THUMB_WIDTH} height={THUMB_HEIGHT} />
+    </View>
     <ItemTitle title={item.title} />
   </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   container: {
-    width: THUMB_WIDTH,
     marginRight: 10,
   },
-  image: {
-    width: THUMB_WIDTH,
-    height: THUMB_HEIGHT,
+  imageWrapper: {
     borderRadius: 6,
+    overflow: 'hidden',
   },
 });
 

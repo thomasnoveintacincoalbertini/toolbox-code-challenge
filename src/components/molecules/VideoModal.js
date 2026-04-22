@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -18,12 +18,18 @@ const BUFFER_CONFIG = {
   bufferForPlaybackAfterRebufferMs: 2000,
 };
 
-const VideoModal = ({ visible, item, onClose }) => {
+// Recibe props específicas en lugar del objeto item completo
+// para no depender de propiedades que no usa (imageUrl)
+const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
   const insets = useSafeAreaInsets();
   const videoRef = useRef(null);
   const [buffering, setBuffering] = useState(true);
 
-  if (!item) return null;
+  // Cada vez que el modal se abre el Video se monta desde cero,
+  // por lo que el buffering siempre arranca en true
+  useEffect(() => {
+    if (visible) setBuffering(true);
+  }, [visible]);
 
   return (
     <Modal
@@ -42,11 +48,11 @@ const VideoModal = ({ visible, item, onClose }) => {
         </TouchableOpacity>
 
         <View style={styles.videoContainer}>
-          {item.videoUrl ? (
+          {videoUrl && visible ? (
             <>
               <Video
                 ref={videoRef}
-                source={{ uri: item.videoUrl }}
+                source={{ uri: videoUrl }}
                 style={styles.video}
                 controls
                 resizeMode="contain"
@@ -60,17 +66,17 @@ const VideoModal = ({ visible, item, onClose }) => {
                 <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color="#fff" />
               )}
             </>
-          ) : (
+          ) : !videoUrl ? (
             <View style={styles.unavailableContainer}>
               <Text style={styles.unavailableText}>Video no disponible</Text>
             </View>
-          )}
+          ) : null}
         </View>
 
         <View style={styles.info}>
-          <Text style={styles.title}>{item.title}</Text>
-          {item.description ? (
-            <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.title}>{title}</Text>
+          {description ? (
+            <Text style={styles.description}>{description}</Text>
           ) : null}
         </View>
       </ScrollView>

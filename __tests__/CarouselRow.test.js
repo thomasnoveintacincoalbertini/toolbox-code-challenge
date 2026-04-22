@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import CarouselRow from '../src/components/organisms/CarouselRow';
 
 jest.mock('../src/components/atoms/LazyImage', () => {
@@ -65,11 +65,12 @@ describe('CarouselRow', () => {
     expect(getByText('Show Y')).toBeTruthy();
   });
 
-  it('calls onItemPress when an item is pressed', () => {
+  it('calls onItemPress with the correct item when pressed', () => {
     const onItemPress = jest.fn();
     const { getByText } = render(
       <CarouselRow carousel={posterCarousel} onItemPress={onItemPress} />
     );
-    getByText('Movie A').parent.props.onPress?.();
+    fireEvent.press(getByText('Movie A'));
+    expect(onItemPress).toHaveBeenCalledWith(posterCarousel.items[0]);
   });
 });
