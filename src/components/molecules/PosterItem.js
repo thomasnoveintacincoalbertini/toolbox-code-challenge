@@ -6,9 +6,9 @@ import LazyImage from '../atoms/LazyImage';
 const POSTER_WIDTH = Math.round(320 / PixelRatio.get());
 const POSTER_HEIGHT = Math.round(480 / PixelRatio.get());
 
-const PosterItem = ({ item, onPress }) => (
+const PosterItem = ({ item, onPress, visible }) => (
   <TouchableOpacity onPress={() => onPress(item)} style={styles.container} activeOpacity={0.8}>
-    <LazyImage uri={item.imageUrl} width={POSTER_WIDTH} height={POSTER_HEIGHT} />
+    <LazyImage uri={item.imageUrl} width={POSTER_WIDTH} height={POSTER_HEIGHT} visible={visible} />
     <View style={styles.titleOverlay}>
       <Text style={styles.title} numberOfLines={2}>
         {item.title}

@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, View, ActivityIndicator, StyleSheet } from 'react-native';
 
-const LazyImage = ({ uri, width, height }) => {
+const LazyImage = ({ uri, width, height, visible = true }) => {
   const [loading, setLoading] = useState(true);
+  const containerStyle = { width, height, backgroundColor: '#222', overflow: 'hidden' };
+
+  useEffect(() => {
+    if (visible) {
+      setLoading(true);
+    }
+  }, [visible, uri]);
+
+  if (!visible) {
+    return <View testID="lazy-image-placeholder" style={containerStyle} />;
+  }
 
   return (
-    <View style={{ width, height, backgroundColor: '#222', overflow: 'hidden' }}>
+    <View style={containerStyle}>
       {loading && (
         <ActivityIndicator
           testID="lazy-image-spinner"

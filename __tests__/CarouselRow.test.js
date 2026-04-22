@@ -4,7 +4,8 @@ import CarouselRow from '../src/components/organisms/CarouselRow';
 
 jest.mock('../src/components/atoms/LazyImage', () => {
   const { View } = require('react-native');
-  return ({ style }) => <View testID="lazy-image" style={style} />;
+  return ({ style, visible = true }) =>
+    visible ? <View testID="lazy-image" style={style} /> : null;
 });
 
 const posterCarousel = {
@@ -14,6 +15,7 @@ const posterCarousel = {
     { title: 'Movie A', imageUrl: 'https://example.com/a.jpg', videoUrl: 'https://v.com/a' },
     { title: 'Movie B', imageUrl: 'https://example.com/b.jpg' },
     { title: 'Movie C', imageUrl: 'https://example.com/c.jpg', videoUrl: 'https://v.com/c' },
+    { title: 'Movie D', imageUrl: 'https://example.com/d.jpg', videoUrl: 'https://v.com/d' },
   ],
 };
 
@@ -35,15 +37,16 @@ describe('CarouselRow', () => {
   });
 
   it('renders all item titles for poster type', () => {
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <CarouselRow carousel={posterCarousel} onItemPress={() => {}} />
     );
     expect(getByText('Movie A')).toBeTruthy();
     expect(getByText('Movie B')).toBeTruthy();
     expect(getByText('Movie C')).toBeTruthy();
+    expect(queryByText('Movie D')).toBeNull();
   });
 
-  it('renders the correct number of lazy images', () => {
+  it('only mounts images for the initial visible poster items', () => {
     const { getAllByTestId } = render(
       <CarouselRow carousel={posterCarousel} onItemPress={() => {}} />
     );

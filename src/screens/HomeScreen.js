@@ -4,20 +4,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import useAuth from '../hooks/useAuth';
 import useCarousels from '../hooks/useCarousels';
 import useTokenInterceptor from '../hooks/useTokenInterceptor';
-import usePrefetch from '../hooks/usePrefetch';
 import useVideoModal from '../hooks/useVideoModal';
 import CarouselRow from '../components/organisms/CarouselRow';
 import LoadingSpinner from '../components/atoms/LoadingSpinner';
 import ErrorMessage from '../components/atoms/ErrorMessage';
 import VideoModal from '../components/molecules/VideoModal';
-import VideoPrefetch from '../components/molecules/VideoPrefetch';
 
 const HomeScreen = () => {
-  const { token, type, authenticate } = useAuth();
+  const { token, type, authenticate, authError } = useAuth();
   useTokenInterceptor(authenticate);
 
-  const { data: carousels, isLoading, isError } = useCarousels(token, type);
-  const { prefetchUrls, onViewableItemsChanged } = usePrefetch();
+  const { data: carousels, isLoading, isError, refetch } = useCarousels(token, type);
   const { selectedItem, modalVisible, handleItemPress, handleModalClose } = useVideoModal();
 
   const renderCarousel = useCallback(
@@ -32,12 +29,33 @@ const HomeScreen = () => {
     []
   );
 
-  if (!token || isLoading) return <LoadingSpinner />;
-  if (isError) return <ErrorMessage message="Error al cargar los datos. Intente nuevamente." />;
+  if (!token) {
+    if (authError) {
+      return (
+        <ErrorMessage
+          message={authError}
+          actionLabel="Reintentar"
+          onAction={authenticate}
+        />
+      );
+    }
+
+    return <LoadingSpinner />;
+  }
+
+  if (isLoading) return <LoadingSpinner />;
+  if (isError) {
+    return (
+      <ErrorMessage
+        message="Error al cargar los datos. Intente nuevamente."
+        actionLabel="Reintentar"
+        onAction={refetch}
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
-      <VideoPrefetch urls={prefetchUrls} />
       <FlatList
         data={carousels}
         renderItem={renderCarousel}
@@ -48,8 +66,6 @@ const HomeScreen = () => {
         maxToRenderPerBatch={2}
         initialNumToRender={2}
         removeClippedSubviews
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
       />
       <VideoModal
         visible={modalVisible}
