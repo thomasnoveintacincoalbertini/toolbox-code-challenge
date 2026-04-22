@@ -109,4 +109,4 @@ npm test
 
 > Nota para los reviewers
 
-El `imageUrl` manda a un dominio que ya no existe [http://placeimg.com/640/480/any](http://placeimg.com/640/480/any) 
+El `imageUrl` manda a un dominio que ya no existe [http://placeimg.com/640/480/any](http://placeimg.com/640/480/any). Lo consulté y me confirmaron que se podía reemplazar, así que las URLs se normalizan a `picsum.photos` en `imageUtils.js` antes de llegar a los componentes.

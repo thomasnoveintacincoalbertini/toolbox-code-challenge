@@ -1,5 +1,6 @@
 import { customInstance } from './instance';
 import { DATA_ENDPOINT } from './endpoints';
+import { normalizeCarousels } from '../utils/imageUtils';
 
 /**
  * El header de autorización se pasa por llamada y no se inyecta desde un
@@ -18,4 +19,4 @@ export const getCarousels = (token, type) =>
     method: 'GET',
     url: DATA_ENDPOINT,
     headers: { Authorization: `${type} ${token}` },
-  }).then((res) => res.data);
+  }).then((res) => normalizeCarousels(res.data));

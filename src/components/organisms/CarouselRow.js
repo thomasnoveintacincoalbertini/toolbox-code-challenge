@@ -25,13 +25,13 @@ const CarouselRow = ({ carousel, onItemPress }) => {
     )
   ));
   const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-    setVisibleItemKeys(
-      new Set(
-        viewableItems.map(({ item, index }) =>
-          getCarouselItemKey(carousel.title, item, index ?? 0)
-        )
-      )
-    );
+    setVisibleItemKeys((prev) => {
+      const next = new Set(prev);
+      viewableItems.forEach(({ item, index }) =>
+        next.add(getCarouselItemKey(carousel.title, item, index ?? 0))
+      );
+      return next;
+    });
   }, [carousel.title]);
 
   useEffect(() => {
