@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 import useAuth from '../hooks/useAuth';
 import useCarousels from '../hooks/useCarousels';
@@ -19,10 +20,14 @@ const HomeScreen = () => {
   const [prefetchUrls, setPrefetchUrls] = useState([]);
 
   const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-    const urls = viewableItems
-      .slice(0, PREFETCH_WINDOW)
-      .map(({ item: carousel }) => carousel.items?.[0]?.videoUrl)
-      .filter(Boolean);
+    const urls = [
+      ...new Set(
+        viewableItems
+          .slice(0, PREFETCH_WINDOW)
+          .map(({ item: carousel }) => carousel.items?.[0]?.videoUrl)
+          .filter(Boolean)
+      ),
+    ];
 
     setPrefetchUrls(urls);
   }, []);

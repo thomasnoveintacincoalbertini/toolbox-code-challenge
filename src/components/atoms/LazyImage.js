@@ -7,9 +7,10 @@ const LazyImage = ({ uri, style }) => {
   return (
     <View style={[styles.wrapper, style]}>
       {loading && (
-        <ActivityIndicator style={StyleSheet.absoluteFill} color="#888" size="small" />
+        <ActivityIndicator testID="lazy-image-spinner" style={StyleSheet.absoluteFill} color="#888" size="small" />
       )}
       <Image
+        testID="lazy-image-img"
         source={{ uri }}
         style={[StyleSheet.absoluteFill, loading && styles.hidden]}
         onLoad={() => setLoading(false)}
