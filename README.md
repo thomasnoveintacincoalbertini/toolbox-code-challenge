@@ -73,11 +73,11 @@ Solo hace falta correrlo una vez, o si se agregan nuevas dependencias nativas.
 
 ### Paso 2.1: iOS
 
-Compila y abre la app en el simulador de iOS:
-
 ```bash
 npx expo run:ios
 ```
+
+Detecta automáticamente los simuladores corriendo y dispositivos físicos conectados. Si hay varios, pregunta cuál usar.
 
 ### Paso 2.2: Android
 
@@ -95,7 +95,7 @@ Luego:
 npx expo run:android
 ```
 
-`run:ios` y `run:android` compilan el código nativo, instalan la app en el emulador/simulador y levantan el bundler de JS. No es compatible con Expo Go por el módulo nativo de video.
+Detecta automáticamente los emuladores corriendo y dispositivos físicos conectados por USB. Si hay varios, pregunta cuál usar.
 
 ---
 
