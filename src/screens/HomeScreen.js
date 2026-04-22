@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import { FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import Video from 'react-native-video';
 import useAuth from '../hooks/useAuth';
 import useCarousels from '../hooks/useCarousels';
 import CarouselRow from '../components/organisms/CarouselRow';
@@ -7,12 +8,24 @@ import LoadingSpinner from '../components/atoms/LoadingSpinner';
 import ErrorMessage from '../components/atoms/ErrorMessage';
 import VideoModal from '../components/molecules/VideoModal';
 
+const PREFETCH_WINDOW = 3;
+
 const HomeScreen = () => {
   const { token, type } = useAuth();
   const { data: carousels, isLoading, isError } = useCarousels(token, type);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [prefetchUrls, setPrefetchUrls] = useState([]);
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
+    const urls = viewableItems
+      .slice(0, PREFETCH_WINDOW)
+      .map(({ item: carousel }) => carousel.items?.[0]?.videoUrl)
+      .filter(Boolean);
+
+    setPrefetchUrls(urls);
+  }, []);
 
   const handleItemPress = useCallback((item) => {
     setSelectedItem(item);
@@ -24,20 +37,47 @@ const HomeScreen = () => {
     setSelectedItem(null);
   }, []);
 
+  const renderCarousel = useCallback(
+    ({ item: carousel }) => (
+      <CarouselRow carousel={carousel} onItemPress={handleItemPress} />
+    ),
+    [handleItemPress]
+  );
+
+  const keyExtractor = useCallback(
+    (item, index) => `carousel-${item.title}-${index}`,
+    []
+  );
+
   if (!token || isLoading) return <LoadingSpinner />;
   if (isError) return <ErrorMessage message="Error al cargar los datos. Intente nuevamente." />;
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        {carousels?.map((carousel, index) => (
-          <CarouselRow
-            key={`${carousel.title}-${index}`}
-            carousel={carousel}
-            onItemPress={handleItemPress}
-          />
-        ))}
-      </ScrollView>
+      {prefetchUrls.map((url) => (
+        <Video
+          key={url}
+          source={{ uri: url }}
+          style={styles.prefetch}
+          paused
+          muted
+          onError={() => {}}
+        />
+      ))}
+
+      <FlatList
+        data={carousels}
+        renderItem={renderCarousel}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        windowSize={3}
+        maxToRenderPerBatch={2}
+        initialNumToRender={2}
+        removeClippedSubviews
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+      />
 
       <VideoModal
         visible={modalVisible}
@@ -53,12 +93,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#111',
   },
-  scroll: {
-    flex: 1,
-  },
   content: {
     paddingTop: 16,
     paddingBottom: 32,
+  },
+  prefetch: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    opacity: 0,
   },
 });
 

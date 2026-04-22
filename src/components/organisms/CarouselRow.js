@@ -31,6 +31,10 @@ const CarouselRow = ({ carousel, onItemPress }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        maxToRenderPerBatch={4}
+        initialNumToRender={3}
+        windowSize={5}
+        removeClippedSubviews
       />
     </View>
   );

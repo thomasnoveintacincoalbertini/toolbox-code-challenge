@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../api/authService';
+import { setTokenExpiredHandler } from '../api/instance';
 import { setAuth } from '../store/authSlice';
 import { selectToken, selectTokenType } from '../store/authSelectors';
 import { isTokenExpired } from '../utils/tokenUtils';
@@ -18,6 +19,10 @@ const useAuth = () => {
       console.error('Auth error:', error);
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    setTokenExpiredHandler(authenticate);
+  }, [authenticate]);
 
   useEffect(() => {
     if (!token || isTokenExpired(token)) {

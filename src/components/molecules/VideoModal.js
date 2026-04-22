@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Modal,
   View,
@@ -6,11 +6,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
+import Video from 'react-native-video';
+
+const BUFFER_CONFIG = {
+  minBufferMs: 5000,
+  maxBufferMs: 20000,
+  bufferForPlaybackMs: 1000,
+  bufferForPlaybackAfterRebufferMs: 2000,
+};
 
 const VideoModal = ({ visible, item, onClose }) => {
   const videoRef = useRef(null);
+  const [buffering, setBuffering] = useState(true);
 
   if (!item) return null;
 
@@ -31,20 +40,29 @@ const VideoModal = ({ visible, item, onClose }) => {
           </TouchableOpacity>
         </View>
 
-        {item.videoUrl ? (
-          <Video
-            ref={videoRef}
-            source={{ uri: item.videoUrl }}
-            style={styles.video}
-            useNativeControls
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay
-          />
-        ) : (
-          <View style={styles.unavailableContainer}>
+        <View style={styles.videoContainer}>
+          {item.videoUrl ? (
+            <>
+              <Video
+                ref={videoRef}
+                source={{ uri: item.videoUrl }}
+                style={styles.video}
+                controls
+                resizeMode="contain"
+                paused={false}
+                bufferConfig={BUFFER_CONFIG}
+                onBuffer={({ isBuffering }) => setBuffering(isBuffering)}
+                onLoad={() => setBuffering(false)}
+                onError={(e) => { setBuffering(false); console.warn('Video error:', e); }}
+              />
+              {buffering && (
+                <ActivityIndicator style={StyleSheet.absoluteFill} size="large" color="#fff" />
+              )}
+            </>
+          ) : (
             <Text style={styles.unavailableText}>Video no disponible</Text>
-          </View>
-        )}
+          )}
+        </View>
       </SafeAreaView>
     </Modal>
   );
@@ -83,19 +101,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  videoContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   video: {
     width: '100%',
     aspectRatio: 16 / 9,
-    backgroundColor: '#000',
-  },
-  unavailableContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   unavailableText: {
     color: '#fff',
     fontSize: 16,
+    textAlign: 'center',
   },
 });
 
