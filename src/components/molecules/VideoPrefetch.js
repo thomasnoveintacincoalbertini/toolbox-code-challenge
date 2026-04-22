@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import Video from 'react-native-video';
 
+// Componente separado para que HomeScreen no dependa directamente de react-native-video
 const VideoPrefetch = ({ urls }) =>
   urls.map((url) => (
     <Video

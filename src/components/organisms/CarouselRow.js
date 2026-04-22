@@ -3,6 +3,8 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import PosterItem from '../molecules/PosterItem';
 import ThumbItem from '../molecules/ThumbItem';
 
+// Agregar un nuevo tipo de carrusel solo requiere una entrada en este mapa,
+// sin modificar el componente (abierto para extensión, cerrado para modificación)
 const ITEM_COMPONENTS = {
   poster: PosterItem,
   thumb: ThumbItem,

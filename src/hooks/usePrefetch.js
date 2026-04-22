@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 
+// Limita el prefetch a los primeros N carruseles 
+// visibles para no saturar la red
 const PREFETCH_WINDOW = 3;
 
 const usePrefetch = () => {

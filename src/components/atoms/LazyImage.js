@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Image, View, ActivityIndicator, StyleSheet } from 'react-native';
 
+/**
+ * El lazy loading se logra en dos niveles: FlatList no renderiza ítems fuera
+ * de su ventana (windowSize), y este componente muestra un spinner mientras
+ * la imagen carga para evitar el parpadeo del placeholder vacío.
+ */
 const LazyImage = ({ uri, style }) => {
   const [loading, setLoading] = useState(true);
 

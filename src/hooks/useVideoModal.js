@@ -9,6 +9,8 @@ const useVideoModal = () => {
     setModalVisible(true);
   }, []);
 
+  // No se limpia el item al cerrar para que el contenido no desaparezca
+  // durante la animación de salida del modal
   const handleModalClose = useCallback(() => {
     setModalVisible(false);
   }, []);

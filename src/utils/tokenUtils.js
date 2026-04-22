@@ -1,3 +1,4 @@
+// expireDate es un claim custom de esta API, no el campo estándar exp de JWT
 export const decodeToken = (token) => {
   try {
     const payload = token.split('.')[1];

@@ -18,11 +18,14 @@ const BUFFER_CONFIG = {
   bufferForPlaybackAfterRebufferMs: 2000,
 };
 
+// Recibe props específicas en lugar del objeto item completo
+// para no depender de propiedades que no usa (imageUrl)
 const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
   const insets = useSafeAreaInsets();
   const videoRef = useRef(null);
   const [buffering, setBuffering] = useState(true);
 
+  // Resetea el spinner de carga cada vez que cambia el video
   useEffect(() => {
     setBuffering(true);
   }, [videoUrl]);
