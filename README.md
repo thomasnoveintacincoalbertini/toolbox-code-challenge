@@ -21,6 +21,9 @@ Implementé los tres:
 
 ## Algunas decisiones que tomé y por qué
 
+**Por qué Expo**
+El brief pide que la app funcione en Android y iOS. Expo simplifica eso, el setup de builds, la configuración nativa y el tooling ya vienen resueltos. Usé `expo prebuild` para generar los proyectos nativos y poder usar `react-native-video`, que requiere código nativo y no funciona con Expo Go.
+
 **Expiración del token**
 Decodifico el token para leer su `expireDate` y programo un `setTimeout` que renueva la sesión antes de que expire. Si por alguna razón eso falla y llega un 401, un interceptor de Axios lo captura y re-autentica. Cuando el token nuevo llega a Redux, React Query detecta el cambio y re-fetcha los carruseles solo.
 
@@ -58,30 +61,41 @@ npm install
 
 ## Ejecución
 
-### Prebuild
+### Paso 1: Prebuild
+
+`react-native-video` usa código nativo, así que primero hay que generar los proyectos nativos de iOS y Android:
 
 ```bash
 npx expo prebuild
 ```
 
-### iOS 
+Solo hace falta correrlo una vez, o si se agregan nuevas dependencias nativas.
+
+### Paso 2.1: iOS
+
+Compila y abre la app en el simulador de iOS:
 
 ```bash
 npx expo run:ios
 ```
 
-### Android
+### Paso 2.2: Android
 
-Asegurarse de crear el archivo `android/local.properties` con la ruta del SDK antes de compilar:
+Antes de compilar, hay que asegurarse de que el archivo `android/local.properties` apunte al SDK:
 
 ```bash
 echo "sdk.dir=$HOME/Library/Android/sdk" > android/local.properties
 ```
+
 > Si el SDK está en otra ubicación, se puede verificar en Android Studio → Settings → Android SDK → Android SDK Location.
+
+Luego:
 
 ```bash
 npx expo run:android
 ```
+
+`run:ios` y `run:android` compilan el código nativo, instalan la app en el emulador/simulador y levantan el bundler de JS. No es compatible con Expo Go por el módulo nativo de video.
 
 ---
 
