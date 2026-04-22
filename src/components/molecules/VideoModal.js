@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -18,12 +18,14 @@ const BUFFER_CONFIG = {
   bufferForPlaybackAfterRebufferMs: 2000,
 };
 
-const VideoModal = ({ visible, item, onClose }) => {
+const VideoModal = ({ visible, title, videoUrl, description, onClose }) => {
   const insets = useSafeAreaInsets();
   const videoRef = useRef(null);
   const [buffering, setBuffering] = useState(true);
 
-  if (!item) return null;
+  useEffect(() => {
+    setBuffering(true);
+  }, [videoUrl]);
 
   return (
     <Modal
@@ -42,11 +44,11 @@ const VideoModal = ({ visible, item, onClose }) => {
         </TouchableOpacity>
 
         <View style={styles.videoContainer}>
-          {item.videoUrl ? (
+          {videoUrl ? (
             <>
               <Video
                 ref={videoRef}
-                source={{ uri: item.videoUrl }}
+                source={{ uri: videoUrl }}
                 style={styles.video}
                 controls
                 resizeMode="contain"
@@ -68,9 +70,9 @@ const VideoModal = ({ visible, item, onClose }) => {
         </View>
 
         <View style={styles.info}>
-          <Text style={styles.title}>{item.title}</Text>
-          {item.description ? (
-            <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.title}>{title}</Text>
+          {description ? (
+            <Text style={styles.description}>{description}</Text>
           ) : null}
         </View>
       </ScrollView>

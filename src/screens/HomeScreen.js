@@ -1,46 +1,24 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Video from 'react-native-video';
 import useAuth from '../hooks/useAuth';
 import useCarousels from '../hooks/useCarousels';
+import useTokenInterceptor from '../hooks/useTokenInterceptor';
+import usePrefetch from '../hooks/usePrefetch';
+import useVideoModal from '../hooks/useVideoModal';
 import CarouselRow from '../components/organisms/CarouselRow';
 import LoadingSpinner from '../components/atoms/LoadingSpinner';
 import ErrorMessage from '../components/atoms/ErrorMessage';
 import VideoModal from '../components/molecules/VideoModal';
-
-const PREFETCH_WINDOW = 3;
+import VideoPrefetch from '../components/molecules/VideoPrefetch';
 
 const HomeScreen = () => {
-  const { token, type } = useAuth();
+  const { token, type, authenticate } = useAuth();
+  useTokenInterceptor(authenticate);
+
   const { data: carousels, isLoading, isError } = useCarousels(token, type);
-
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [prefetchUrls, setPrefetchUrls] = useState([]);
-
-  const onViewableItemsChanged = useCallback(({ viewableItems }) => {
-    const urls = [
-      ...new Set(
-        viewableItems
-          .slice(0, PREFETCH_WINDOW)
-          .map(({ item: carousel }) => carousel.items?.[0]?.videoUrl)
-          .filter(Boolean)
-      ),
-    ];
-
-    setPrefetchUrls(urls);
-  }, []);
-
-  const handleItemPress = useCallback((item) => {
-    setSelectedItem(item);
-    setModalVisible(true);
-  }, []);
-
-  const handleModalClose = useCallback(() => {
-    setModalVisible(false);
-    setSelectedItem(null);
-  }, []);
+  const { prefetchUrls, onViewableItemsChanged } = usePrefetch();
+  const { selectedItem, modalVisible, handleItemPress, handleModalClose } = useVideoModal();
 
   const renderCarousel = useCallback(
     ({ item: carousel }) => (
@@ -59,17 +37,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {prefetchUrls.map((url) => (
-        <Video
-          key={url}
-          source={{ uri: url }}
-          style={styles.prefetch}
-          paused
-          muted
-          onError={() => {}}
-        />
-      ))}
-
+      <VideoPrefetch urls={prefetchUrls} />
       <FlatList
         data={carousels}
         renderItem={renderCarousel}
@@ -83,10 +51,11 @@ const HomeScreen = () => {
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
       />
-
       <VideoModal
         visible={modalVisible}
-        item={selectedItem}
+        title={selectedItem?.title}
+        videoUrl={selectedItem?.videoUrl}
+        description={selectedItem?.description}
         onClose={handleModalClose}
       />
     </SafeAreaView>
@@ -101,12 +70,6 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 16,
     paddingBottom: 32,
-  },
-  prefetch: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    opacity: 0,
   },
 });
 

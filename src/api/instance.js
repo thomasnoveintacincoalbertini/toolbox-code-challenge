@@ -9,22 +9,6 @@ const axiosInstance = axios.create({
   },
 });
 
-let onTokenExpired = null;
-
-export const setTokenExpiredHandler = (handler) => {
-  onTokenExpired = handler;
-};
-
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401 && onTokenExpired) {
-      onTokenExpired();
-    }
-    return Promise.reject(error);
-  }
-);
-
 export const customInstance = ({ method, url, data, headers, ...rest }) =>
   axiosInstance({ method, url, data, headers, ...rest });
 

@@ -4,7 +4,7 @@ import { isTokenExpired } from '../utils/tokenUtils';
 
 const useCarousels = (token, type) =>
   useQuery({
-    queryKey: ['carousels', token],
+    queryKey: ['carousels', token, type],
     queryFn: () => getCarousels(token, type),
     enabled: !!token && !!type && !isTokenExpired(token),
     retry: 1,
