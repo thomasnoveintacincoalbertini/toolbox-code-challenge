@@ -1,6 +1,37 @@
 # Toolbox Code Challenge — React Native
 
-Aplicación React Native que consume una API REST y muestra el contenido en carruseles horizontales y verticales con reproductor de video.
+## Como funciona ?
+
+La app se loguea contra una API, obtiene carruseles y los muestra en pantalla. 
+
+Hay dos tipos: `poster` (vertical) y `thumb` (horizontal apaisado). 
+Al tocar cualquier ítem se abre el reproductor de video. Si el ítem no tiene `videoUrl`, aparece "Video no disponible".
+
+---
+
+## Puntos opcionales
+
+Implementé los tres:
+
+- **Reproductor de video** con `react-native-video`, incluyendo el mensaje de "Video no disponible" cuando no hay URL.
+- **Redux** para manejar el token de sesión.
+- **Tests unitarios con Jest** sobre `CarouselRow` y `LazyImage`.
+
+---
+
+## Algunas decisiones que tomé y por qué
+
+**Expiración del token**
+Decodifico el token para leer su `expireDate` y programo un `setTimeout` que renueva la sesión antes de que expire. Si por alguna razón eso falla y llega un 401, un interceptor de Axios lo captura y re-autentica. Cuando el token nuevo llega a Redux, React Query detecta el cambio y re-fetcha los carruseles solo.
+
+**Redux y React Query juntos**
+Redux lo uso solo para el token porque es estado global real. Lo consumen el interceptor, el guard del query y los hooks. Introducí React Query  para los carruseles porque el caché y el re-fetch automático al cambiar el token lo hacen por sí solos, sin tener que manejarlo a mano. No se pisan, hacen cosas distintas.
+
+**Estructura de componentes**
+Organicé los componentes en atoms, molecules y organisms. En `CarouselRow` uso un mapa `ITEM_COMPONENTS` para elegir el componente según el tipo de carrusel, si en futuro viene un tipo nuevo, solo agrego una entrada al mapa sin tocar nada más.
+
+**Lazy loading**
+Cada `CarouselRow` trackea qué ítems son visibles con `onViewableItemsChanged` y le pasa un prop `visible` a cada ítem. `LazyImage` cuando `visible` es `false` renderiza solo un placeholder vacío sin montar `<Image>`, sin hacer ningún request. La imagen se pide recién cuando el ítem entra al viewport.
 
 ---
 
@@ -55,6 +86,8 @@ npx expo run:android
 ---
 
 ## Tests
+
+Tests sobre `CarouselRow` y `LazyImage`, cubriendo renderizado, interacción y el comportamiento de lazy loading.
 
 ```bash
 npm test
