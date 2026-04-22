@@ -10,6 +10,7 @@ const ITEM_COMPONENTS = {
   thumb: ThumbItem,
 };
 const INITIAL_VISIBLE_ITEMS = 3;
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 50 };
 
 const getCarouselItemKey = (carouselTitle, item, index) =>
   `${carouselTitle}-${item.title}-${item.imageUrl ?? item.videoUrl ?? 'item'}-${index}`;
@@ -75,7 +76,7 @@ const CarouselRow = ({ carousel, onItemPress }) => {
         windowSize={5}
         removeClippedSubviews
         onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        viewabilityConfig={VIEWABILITY_CONFIG}
       />
     </View>
   );

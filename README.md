@@ -106,3 +106,7 @@ Tests sobre `CarouselRow` y `LazyImage`, cubriendo renderizado, interacción y e
 ```bash
 npm test
 ```
+
+> Nota para los reviewers
+
+El `imageUrl` manda a un dominio que ya no existe [http://placeimg.com/640/480/any](http://placeimg.com/640/480/any) 
